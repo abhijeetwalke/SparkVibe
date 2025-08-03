@@ -12,6 +12,24 @@ from utils.constants import STOCKS
 
 def create_volume_analysis_tab(all_stock_data):
     """Create the Volume Analysis tab content"""
+
+    # Add CSS for center-aligned table
+    st.markdown("""
+    <style>
+    .stDataFrame > div > div > div > div > table {
+        text-align: center !important;
+    }
+    .stDataFrame > div > div > div > div > table th {
+        text-align: center !important;
+        padding: 8px !important;
+    }
+    .stDataFrame > div > div > div > div > table td {
+        text-align: center !important;
+        padding: 6px !important;
+    }
+    </style>
+    """, unsafe_allow_html=True)
+
     st.subheader("Volume Analysis")
     st.write("Compare trading volume with average volume over time for each stock.")
 

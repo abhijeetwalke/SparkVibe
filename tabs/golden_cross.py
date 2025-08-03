@@ -11,6 +11,25 @@ from utils.constants import STOCKS
 def create_golden_cross_tab(all_stock_data):
     """Create the Golden Cross tab content"""
     st.subheader("Golden Cross Stocks")
+
+    # Add custom CSS for center-aligned table content
+    st.markdown("""
+    <style>
+    .stDataFrame [data-testid="stDataFrameResizable"] > div {
+        text-align: center !important;
+    }
+    .stDataFrame [data-testid="stDataFrameResizable"] th {
+        text-align: center !important;
+    }
+    .stDataFrame [data-testid="stDataFrameResizable"] td {
+        text-align: center !important;
+    }
+    .stDataFrame table {
+        margin: 0 auto;
+    }
+    </style>
+    """, unsafe_allow_html=True)
+
     # Filter stocks with golden cross and remove any None values
     golden_cross_stocks = {symbol: data for symbol, data in all_stock_data.items()
                           if data is not None and data.get("golden_cross", False)}
@@ -44,18 +63,18 @@ def create_golden_cross_tab(all_stock_data):
 
         golden_cross_df = pd.DataFrame(golden_cross_data)
 
-        # Display the dataframe with built-in sorting
+        # Display the dataframe with built-in sorting and improved formatting
         st.dataframe(
             golden_cross_df,
             use_container_width=True,
             height=400,
             column_config={
-                "Symbol": st.column_config.TextColumn("Symbol 🔤"),
-                "Company": st.column_config.TextColumn("Company 🏢"),
-                "Current Price": st.column_config.NumberColumn("Price 💲", format="$%.1f"),
-                "Daily Change": st.column_config.NumberColumn("Change % 📈", format="%.1f%%"),
-                "Golden Cross": st.column_config.TextColumn("Golden Cross ✓"),
-                "Golden Cross Days": st.column_config.NumberColumn("Days Ago", format="%.0f"),
+                "Symbol": st.column_config.TextColumn("Symbol", width=80),
+                "Company": st.column_config.TextColumn("Company", width=200),
+                "Current Price": st.column_config.NumberColumn("Price", format="$%.1f", width=100),
+                "Daily Change": st.column_config.NumberColumn("Change %", format="%.1f%%", width=100),
+                "Golden Cross": st.column_config.TextColumn("Golden Cross", width=120),
+                "Golden Cross Days": st.column_config.NumberColumn("Days Ago", format="%.0f", width=80),
             },
             hide_index=True,
         )

@@ -11,6 +11,98 @@ from utils.constants import STOCKS
 def create_death_cross_tab(all_stock_data):
     """Create the Death Cross tab content"""
     st.subheader("Death Cross Stocks")
+
+    # Add custom CSS for center-aligned table content
+    st.markdown("""
+    <style>
+    .stDataFrame [data-testid="stDataFrameResizable"] > div {
+        text-align: center !important;
+    }
+    .stDataFrame [data-testid="stDataFrameResizable"] th {
+        text-align: center !important;
+    }
+    .stDataFrame [data-testid="stDataFrameResizable"] td {
+        text-align: center !important;
+    }
+    .stDataFrame table {
+        margin: 0 auto;
+    }
+    </style>
+    """, unsafe_allow_html=True)
+
+    # Add custom CSS for center-aligned table
+    st.markdown("""
+    <style>
+    /* Target Streamlit dataframe table elements */
+    .stDataFrame table {
+        margin: 0 auto !important;
+        border-collapse: collapse !important;
+    }
+
+    /* Center align all table content */
+    .stDataFrame table th,
+    .stDataFrame table td {
+        text-align: center !important;
+        vertical-align: middle !important;
+        padding: 8px 12px !important;
+    }
+
+    /* Specific targeting for dataframe cells */
+    .stDataFrame [data-testid="stDataFrame"] table th,
+    .stDataFrame [data-testid="stDataFrame"] table td {
+        text-align: center !important;
+    }
+
+    /* Target the actual cell content */
+    .stDataFrame table tbody tr td div,
+    .stDataFrame table thead tr th div {
+        text-align: center !important;
+        justify-content: center !important;
+    }
+
+    /* Override Streamlit's default left alignment */
+    div[data-testid="stDataFrame"] table th,
+    div[data-testid="stDataFrame"] table td {
+        text-align: center !important;
+    }
+    </style>
+    """, unsafe_allow_html=True)
+
+    # Add custom CSS for center-aligned table
+    st.markdown("""
+    <style>
+    /* Center align all dataframe content */
+    div[data-testid="stDataFrame"] {
+        display: flex;
+        justify-content: center;
+    }
+
+    div[data-testid="stDataFrame"] table {
+        margin: 0 auto;
+    }
+
+    div[data-testid="stDataFrame"] th {
+        text-align: center !important;
+        padding: 8px 4px !important;
+        font-weight: bold !important;
+    }
+
+    div[data-testid="stDataFrame"] td {
+        text-align: center !important;
+        padding: 6px 4px !important;
+    }
+
+    /* Additional styling for better alignment */
+    .stDataFrame {
+        text-align: center;
+    }
+
+    .stDataFrame table {
+        border-collapse: collapse;
+        margin: 0 auto;
+    }
+    </style>
+    """, unsafe_allow_html=True)
     # Filter stocks with death cross and remove any None values
     death_cross_stocks = {symbol: data for symbol, data in all_stock_data.items()
                          if data is not None and data.get("death_cross", False)}
