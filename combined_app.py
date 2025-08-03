@@ -1193,7 +1193,7 @@ def main():
     last_update.text(f"Last updated: {current_time}")
 
     # Create tabs for different views
-    tab1, tab2, tab3, tab4 = st.tabs(["📊 Summary Table", "🔍 Golden Cross", "⚠️ Death Cross", "📈 Volume Analysis"])
+    tab1, tab2, tab3, tab4, tab5 = st.tabs(["📊 Summary Table", "🔍 Golden Cross", "⚠️ Death Cross", "📈 Volume Analysis", "📊 Inflation (CPI)"])
 
 
     with tab1:
@@ -1437,8 +1437,10 @@ def main():
         st.write("Compare trading volume with average volume over time for each stock.")
 
         # Define a list of important stocks to show volume charts for
-        # Start with market indices and ETFs, then add major tech stocks
-        important_stocks = ["^VIX", "SPY", "QQQ", "AAPL", "MSFT", "GOOGL", "AMZN", "META", "NVDA", "TSLA", "AMD"]
+        # Start with locked symbols (VIX, SPY, QQQ) then add all remaining stocks from STOCKS dictionary
+        locked_symbols = ["^VIX", "SPY", "QQQ"]
+        remaining_stocks = [symbol for symbol in STOCKS.keys() if symbol not in locked_symbols]
+        important_stocks = locked_symbols + remaining_stocks
 
         # Display a message about the stocks being shown
         st.info(f"Showing volume analysis for {len(important_stocks)} key stocks. Scroll down to view all charts.")
@@ -1886,6 +1888,214 @@ def main():
 
             else:
                 st.error(f"Could not fetch volume data for {symbol}")
+
+    with tab5:
+        st.subheader("Inflation Analysis - Consumer Price Index (CPI)")
+        st.write("12-month percentage change in Consumer Price Index for selected categories")
+
+        # Create sample CPI data (in a real implementation, this would fetch from FRED API)
+        def get_cpi_data():
+            """
+            Get CPI data for different categories
+            In a real implementation, this would fetch from FRED API or BLS API
+            """
+            import random
+            from datetime import datetime, timedelta
+
+            # Generate sample dates for the last 24 months
+            end_date = datetime.now()
+            dates = []
+            for i in range(24):
+                date = end_date - timedelta(days=30*i)
+                dates.append(date.strftime('%Y-%m'))
+            dates.reverse()
+
+            # CPI categories with sample data
+            categories = {
+                "All Items": {"current": 3.2, "trend": [2.1, 2.3, 2.8, 3.1, 3.4, 3.7, 4.2, 4.8, 5.1, 5.4, 5.8, 6.2, 6.8, 7.1, 7.5, 7.8, 7.2, 6.8, 6.2, 5.8, 5.1, 4.6, 3.8, 3.2]},
+                "Food": {"current": 2.8, "trend": [1.8, 2.1, 2.6, 2.9, 3.2, 3.8, 4.5, 5.2, 5.8, 6.1, 6.7, 7.3, 8.1, 8.6, 9.2, 9.8, 9.1, 8.4, 7.6, 6.9, 5.8, 4.9, 3.6, 2.8]},
+                "Energy": {"current": -2.1, "trend": [5.2, 4.8, 3.9, 2.1, 0.8, -1.2, -2.8, -1.5, 2.3, 5.8, 8.9, 12.4, 15.8, 18.2, 21.6, 19.8, 16.2, 11.4, 6.8, 2.1, -1.8, -3.2, -2.8, -2.1]},
+                "Housing": {"current": 5.1, "trend": [2.8, 3.1, 3.6, 4.1, 4.5, 4.8, 5.2, 5.6, 5.9, 6.2, 6.5, 6.8, 7.1, 7.3, 7.5, 7.2, 6.8, 6.4, 6.1, 5.8, 5.5, 5.3, 5.2, 5.1]},
+                "Transportation": {"current": 1.2, "trend": [3.8, 3.2, 2.1, 0.8, -0.5, -1.8, -2.1, 0.2, 2.8, 5.4, 8.9, 12.1, 15.6, 18.2, 16.8, 13.4, 9.2, 5.8, 2.1, -0.8, -1.5, 0.2, 0.8, 1.2]},
+                "Medical Care": {"current": 3.8, "trend": [2.1, 2.3, 2.6, 2.9, 3.2, 3.5, 3.8, 4.1, 4.4, 4.6, 4.8, 5.1, 5.3, 5.5, 5.2, 4.9, 4.6, 4.3, 4.1, 3.9, 3.8, 3.8, 3.8, 3.8]},
+                "Recreation": {"current": 2.1, "trend": [1.2, 1.4, 1.8, 2.1, 2.4, 2.8, 3.2, 3.6, 3.9, 4.1, 4.3, 4.5, 4.2, 3.8, 3.4, 3.1, 2.8, 2.6, 2.4, 2.3, 2.2, 2.1, 2.1, 2.1]},
+                "Education": {"current": 4.2, "trend": [3.1, 3.2, 3.4, 3.6, 3.8, 4.1, 4.3, 4.5, 4.6, 4.7, 4.8, 4.9, 4.8, 4.7, 4.6, 4.5, 4.4, 4.3, 4.2, 4.2, 4.2, 4.2, 4.2, 4.2]}
+            }
+
+            return dates, categories
+
+        # Get CPI data
+        dates, cpi_categories = get_cpi_data()
+
+        # Display current CPI rates
+        st.markdown("### Current 12-Month CPI Changes")
+
+        # Create metrics display
+        cols = st.columns(4)
+        category_items = list(cpi_categories.items())
+
+        for i, (category, data) in enumerate(category_items):
+            col_idx = i % 4
+            with cols[col_idx]:
+                current_rate = data["current"]
+                # Determine color based on rate
+                if current_rate > 4.0:
+                    delta_color = "off"  # Red for high inflation
+                elif current_rate < 2.0:
+                    delta_color = "normal"  # Normal for low inflation
+                else:
+                    delta_color = "normal"  # Normal for moderate inflation
+
+                st.metric(
+                    label=category,
+                    value=f"{current_rate:.1f}%",
+                    delta=f"12-month change"
+                )
+
+        # Create CPI trends chart
+        st.markdown("### CPI Trends Over Time")
+
+        # Prepare data for chart
+        chart_data = pd.DataFrame()
+        chart_data['Date'] = dates
+
+        for category, data in cpi_categories.items():
+            chart_data[category] = data["trend"]
+
+        # Set date as index
+        chart_data['Date'] = pd.to_datetime(chart_data['Date'])
+        chart_data = chart_data.set_index('Date')
+
+        # Create interactive chart
+        try:
+            fig = go.Figure()
+
+            # Add traces for each category
+            colors = ['#1f77b4', '#ff7f0e', '#2ca02c', '#d62728', '#9467bd', '#8c564b', '#e377c2', '#7f7f7f']
+
+            for i, (category, data) in enumerate(cpi_categories.items()):
+                color = colors[i % len(colors)]
+                fig.add_trace(
+                    go.Scatter(
+                        x=chart_data.index,
+                        y=chart_data[category],
+                        mode='lines+markers',
+                        name=category,
+                        line=dict(color=color, width=2),
+                        marker=dict(size=4)
+                    )
+                )
+
+            # Update layout
+            fig.update_layout(
+                title="Consumer Price Index - 12-Month Percentage Change",
+                xaxis_title="Date",
+                yaxis_title="Percentage Change (%)",
+                legend=dict(
+                    orientation="h",
+                    yanchor="bottom",
+                    y=1.02,
+                    xanchor="right",
+                    x=1
+                ),
+                hovermode="x unified",
+                height=600,
+            )
+
+            # Add horizontal line at 2% (Fed target)
+            fig.add_hline(y=2.0, line_dash="dash", line_color="gray",
+                         annotation_text="Fed Target (2%)", annotation_position="bottom right")
+
+            st.plotly_chart(fig, use_container_width=True)
+
+        except Exception as e:
+            st.error(f"Error creating interactive chart: {str(e)}")
+            # Fallback to simple line chart
+            st.line_chart(chart_data)
+
+        # Create CPI summary table
+        st.markdown("### CPI Summary Table")
+
+        # Prepare table data
+        table_data = []
+        for category, data in cpi_categories.items():
+            current_rate = data["current"]
+            previous_rate = data["trend"][-2] if len(data["trend"]) > 1 else current_rate
+            change = current_rate - previous_rate
+
+            # Determine status
+            if current_rate > 4.0:
+                status = "🔴 High"
+            elif current_rate < 2.0:
+                status = "🟢 Low"
+            else:
+                status = "🟡 Moderate"
+
+            table_data.append({
+                "Category": category,
+                "Current Rate": f"{current_rate:.1f}%",
+                "Previous Month": f"{previous_rate:.1f}%",
+                "Monthly Change": f"{change:+.1f}%",
+                "Status": status
+            })
+
+        # Create DataFrame and display
+        cpi_df = pd.DataFrame(table_data)
+
+        st.dataframe(
+            cpi_df,
+            use_container_width=True,
+            height=400,
+            column_config={
+                "Category": st.column_config.TextColumn("Category", width="medium"),
+                "Current Rate": st.column_config.TextColumn("Current Rate", width="small"),
+                "Previous Month": st.column_config.TextColumn("Previous Month", width="small"),
+                "Monthly Change": st.column_config.TextColumn("Monthly Change", width="small"),
+                "Status": st.column_config.TextColumn("Status", width="small"),
+            },
+            hide_index=True,
+        )
+
+        # Add analysis section
+        st.markdown("### Inflation Analysis")
+
+        # Calculate overall inflation status
+        overall_cpi = cpi_categories["All Items"]["current"]
+
+        if overall_cpi > 4.0:
+            st.error(f"**High Inflation Alert**: Overall CPI is at {overall_cpi:.1f}%, significantly above the Federal Reserve's 2% target. "
+                    "This may indicate overheating in the economy and could lead to monetary policy tightening.")
+        elif overall_cpi < 1.0:
+            st.warning(f"**Low Inflation Alert**: Overall CPI is at {overall_cpi:.1f}%, below the Federal Reserve's 2% target. "
+                      "This may indicate economic weakness or deflationary pressures.")
+        else:
+            st.success(f"**Moderate Inflation**: Overall CPI is at {overall_cpi:.1f}%, which is within a reasonable range relative to the Federal Reserve's 2% target.")
+
+        # Highlight key categories
+        st.markdown("#### Key Observations:")
+
+        # Find highest and lowest categories
+        highest_category = max(cpi_categories.items(), key=lambda x: x[1]["current"])
+        lowest_category = min(cpi_categories.items(), key=lambda x: x[1]["current"])
+
+        st.write(f"• **Highest Inflation**: {highest_category[0]} at {highest_category[1]['current']:.1f}%")
+        st.write(f"• **Lowest Inflation**: {lowest_category[0]} at {lowest_category[1]['current']:.1f}%")
+
+        # Energy analysis
+        energy_rate = cpi_categories["Energy"]["current"]
+        if energy_rate < 0:
+            st.write(f"• **Energy Deflation**: Energy prices are declining at {abs(energy_rate):.1f}%, which helps reduce overall inflation")
+        else:
+            st.write(f"• **Energy Inflation**: Energy prices are rising at {energy_rate:.1f}%, contributing to overall inflation")
+
+        # Housing analysis
+        housing_rate = cpi_categories["Housing"]["current"]
+        st.write(f"• **Housing Impact**: Housing costs are rising at {housing_rate:.1f}%, representing a significant component of overall inflation")
+
+        # Add data source note
+        st.markdown("---")
+        st.markdown("**Data Source**: Sample CPI data for demonstration. In production, this would connect to the Federal Reserve Economic Data (FRED) API or Bureau of Labor Statistics API for real-time inflation data.")
+        st.markdown("**Note**: The Federal Reserve targets 2% annual inflation as measured by the Personal Consumption Expenditures (PCE) price index, though CPI is also closely monitored.")
 
     # Auto-refresh functionality
     if auto_refresh:
