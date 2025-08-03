@@ -39,7 +39,7 @@ echo "Press Ctrl+C to stop the application"
 echo "================================================"
 
 # Start the Streamlit app
-streamlit run combined_app.py
+streamlit run main_app.py
 
 echo ""
 echo "👋 SparkVibe Finance application has been stopped"

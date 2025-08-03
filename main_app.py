@@ -231,6 +231,7 @@ def create_summary_table_tab(all_stock_data):
                 "200-Day MA": safe_float(data["ma_200d"]),
                 "Golden Cross": golden_cross_display,
                 "Death Cross": death_cross_display,
+                "% Float": safe_float(data["short_percent_float"]) * 100 if data["short_percent_float"] != "N/A" and safe_float(data["short_percent_float"]) is not None else None,
                 "Earnings Date": earnings_date_display,
             })
 
@@ -252,7 +253,7 @@ def create_summary_table_tab(all_stock_data):
         column_order = [
             "Symbol", "Company", "Price", "Change %", "Volume (M)", "Avg Volume (M)",
             "Market Cap (B)", "P/E", "EPS", "PEG", "P/B", "50-Day MA", "200-Day MA",
-            "Golden Cross", "Death Cross", "Earnings Date"
+            "Golden Cross", "Death Cross", "% Float", "Earnings Date"
         ]
         df = df[column_order]
 
@@ -263,7 +264,7 @@ def create_summary_table_tab(all_stock_data):
             height=600,
             column_config={
                 "Symbol": st.column_config.TextColumn("Symbol 🔤", width="small"),
-                "Company": st.column_config.TextColumn("Company 🏢", width="large"),
+                "Company": st.column_config.TextColumn("Company 🏢", width="small"),
                 "Price": st.column_config.NumberColumn("Price 💲", width="small", format="$%.1f"),
                 "Change %": st.column_config.NumberColumn("Change % 📈", width="small", format="%.1f%%"),
                 "Volume (M)": st.column_config.NumberColumn("Volume 📊", width="small", format="%.1fM"),
@@ -277,6 +278,7 @@ def create_summary_table_tab(all_stock_data):
                 "200-Day MA": st.column_config.NumberColumn("200-Day MA 📈", width="small", format="$%.1f"),
                 "Golden Cross": st.column_config.TextColumn("Golden Cross ✨", width="small"),
                 "Death Cross": st.column_config.TextColumn("Death Cross ⚠️", width="small"),
+                "% Float": st.column_config.NumberColumn("% Float 📊", width="small", format="%.2f%%"),
                 "Earnings Date": st.column_config.TextColumn("Earnings Date 📅", width="medium"),
             },
             hide_index=True,
